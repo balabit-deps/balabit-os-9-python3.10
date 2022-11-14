@@ -1,3 +1,26 @@
+python3.10 (3.10.6-1~22.04.2) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: Buffer overflow
+    - debian/patches/CVE-2022-37454.patch: fixes buffer overflow in
+      Modules/_sha3/kcp/KeccakSponge.inc (LP: #1995197).
+    - CVE-2022-37454
+  * SECURITY UPDATE: Denial of service
+    - debian/patches/CVE-2022-45061.patch: fix quadratic time idna decoding
+      in Lib/encodings/idna.py, Lib/test/test_codecs.py.
+    - CVE-2022-45061
+
+ -- Leonidas Da Silva Barbosa <leo.barbosa@canonical.com>  Mon, 14 Nov 2022 13:10:14 -0300
+
+python3.10 (3.10.6-1~22.04.1) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: privilege escalation via multiprocessing forkserver
+    start method
+    - debian/patches/CVE-2022-42919.patch: don't use Linux abstract sockets
+      in Lib/multiprocessing/connection.py.
+    - CVE-2022-42919
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 02 Nov 2022 14:53:38 -0400
+
 python3.10 (3.10.6-1~22.04) jammy-proposed; urgency=medium
 
   * SRU: LP: #1982108: Backport 3.10.6 to 20.04 LTS.
