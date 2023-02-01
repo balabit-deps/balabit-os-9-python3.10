@@ -429,6 +429,7 @@ common_configure_args = \
 		--without-ensurepip \
 		--with-system-expat \
 		--with-dtrace \
+		--with-ssl-default-suites=openssl \
 		--with-system-libmpdec \
 		--with-wheel-pkg-dir=/usr/share/python-wheels/ \
 		MKDIR_P="/bin/mkdir -p" \
