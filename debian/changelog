@@ -1,3 +1,14 @@
+python3.10 (3.10.6-1~22.04.2ubuntu1.1) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: Possible Bypass Blocklisting
+    - debian/patches/CVE-2023-24329-2.patch: adds a complementary patch/fix
+      for CVE-2023-24329 that was partially fixed before. This patch starts
+      stripping C0 control and space chars in 'urlsplit' in Lib/urllib/parse.py,
+      Lib/test/test_urlparse.py.
+    - CVE-2023-24329
+
+ -- Leonidas Da Silva Barbosa <leo.barbosa@canonical.com>  Mon, 29 May 2023 08:10:38 -0300
+
 python3.10 (3.10.6-1~22.04.2ubuntu1) jammy-security; urgency=medium
 
   * SECURITY UPDATE: Possible Bypass Blocklisting
