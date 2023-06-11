@@ -1249,6 +1249,8 @@
  _PyImport_FindExtensionObject@Base @SVER@
  _PyImport_FixupBuiltin@Base @SVER@
  _PyImport_FixupExtensionObject@Base @SVER@
+ _PyImport_GetModuleAttr@Base @SVER@
+ _PyImport_GetModuleAttrString@Base @SVER@
  _PyImport_GetModuleId@Base @SVER@
  _PyImport_IsInitialized@Base @SVER@
  _PyImport_ReleaseLock@Base @SVER@

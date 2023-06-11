@@ -120,6 +120,22 @@ General Options
 Install Options
 ---------------
 
+.. cmdoption:: --prefix=PREFIX
+
+   Install architecture-independent files in PREFIX. On Unix, it
+   defaults to :file:`/usr/local`.
+
+   This value can be retrived at runtime using :data:`sys.prefix`.
+
+   As an example, one can use ``--prefix="$HOME/.local/"`` to install
+   a Python in its home directory.
+
+.. cmdoption:: --exec-prefix=EPREFIX
+
+   Install architecture-dependent files in EPREFIX, defaults to :option:`--prefix`.
+
+   This value can be retrived at runtime using :data:`sys.exec_prefix`.
+
 .. cmdoption:: --disable-test-modules
 
    Don't build nor install test modules, like the :mod:`test` package or the
@@ -654,12 +670,12 @@ Compiler flags
 
    In particular, :envvar:`CFLAGS` should not contain:
 
-   * the compiler flag `-I` (for setting the search path for include files).
-     The `-I` flags are processed from left to right, and any flags in
-     :envvar:`CFLAGS` would take precedence over user- and package-supplied `-I`
+   * the compiler flag ``-I`` (for setting the search path for include files).
+     The ``-I`` flags are processed from left to right, and any flags in
+     :envvar:`CFLAGS` would take precedence over user- and package-supplied ``-I``
      flags.
 
-   * hardening flags such as `-Werror` because distributions cannot control
+   * hardening flags such as ``-Werror`` because distributions cannot control
      whether packages installed by users conform to such heightened
      standards.
 
@@ -777,9 +793,9 @@ Linker flags
 
    In particular, :envvar:`LDFLAGS` should not contain:
 
-   * the compiler flag `-L` (for setting the search path for libraries).
-     The `-L` flags are processed from left to right, and any flags in
-     :envvar:`LDFLAGS` would take precedence over user- and package-supplied `-L`
+   * the compiler flag ``-L`` (for setting the search path for libraries).
+     The ``-L`` flags are processed from left to right, and any flags in
+     :envvar:`LDFLAGS` would take precedence over user- and package-supplied ``-L``
      flags.
 
 .. envvar:: CONFIGURE_LDFLAGS_NODIST

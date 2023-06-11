@@ -95,6 +95,10 @@ endif
 #  dbmliborder = gdbm:bdb
 #endif
 
+ifneq (,$(filter valgrind, $(shell dpkg-query --show -f '$${Depends}\n' valgrind-if-available)))
+  valgrind_configure_args = --with-valgrind
+endif
+
 VER=3.10
 SVER=3.10.0
 NVER=3.11
@@ -239,15 +243,14 @@ ifeq ($(with_lto),yes)
 endif
 
 sysconfig_substflags = \
-	-e 's,gcc-8,gcc,;s,g++-8,g++,' \
 	$(if $(with_lto),$(foreach i,-flto=auto -flto -fuse-linker-plugin -ffat-lto-objects,-e 's/$(i)//g')) \
 	-e '/^OPT/s,-O3,-O2,' \
 	-e 's/-O3/-O2/g' \
 	-e 's/-fprofile-use *-fprofile-correction//g' \
 	-e 's/-fstack-protector /-fstack-protector-strong /g' \
-	-e 's/-specs=[^ ]*//g' \
-	-e 's/-fdebug-prefix-map=[^ ]*//g' \
-	-e 's/-ffile-prefix-map=[^ ]*//g' \
+	-e "s/-specs=[^ ']*//g" \
+	-e "s/-fdebug-prefix-map=[^ ']*//g" \
+	-e "s/-ffile-prefix-map=[^ ']*//g" \
 	-e 's/-Wl,-z,relro//g' \
 	-e 's,^RUNSHARED *=.*,RUNSHARED=,' \
 	-e '/BLDLIBRARY/s/-L\. //'
@@ -504,6 +507,7 @@ stamps/stamp-configure-debug: stamps/stamp-patch
 	    $(config_site) \
 	    ../configure \
 		$(common_configure_args) \
+		$(valgrind_configure_args) \
 		--with-pydebug
 
 	$(call __post_configure,$(buildd_debug))
@@ -519,6 +523,7 @@ stamps/stamp-configure-shared-debug: stamps/stamp-patch
 	    ../configure \
 		$(common_configure_args) \
 		--enable-shared \
+		$(valgrind_configure_args) \
 		--with-pydebug
 
 	$(call __post_configure,$(buildd_shdebug))
@@ -1067,6 +1072,10 @@ endif
 	cp -p $(buildd_shared)/libpython$(VER)-pic.a \
 		$(d_ldev)/usr/lib/python$(VER)/config-$(VER)-$(DEB_HOST_MULTIARCH)/
 
+	mkdir -p $(d_ldev)/usr/src/$(PVER)/{Grammar,Parser}
+	cp -p Grammar/python.gram $(d_ldev)/usr/src/$(PVER)/Grammar/.
+	cp -p Parser/Python.asdl $(d_ldev)/usr/src/$(PVER)/Parser/.
+
 # FIXME
 #	: # symlinks for the "old" include directory name
 #	ln -sf python$(VER)m $(d_ldev)/usr/include/python$(VER)
@@ -1236,11 +1245,15 @@ endif
 
 	: # generate binfmt file
 	mkdir -p $(d_min)/usr/share/binfmts
+	mkdir -p $(d_min)/usr/lib/binfmt.d
 ifeq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
 	$(buildd_static)/python debian/mkbinfmt.py $(PVER) \
 		> $(d_min)/usr/share/binfmts/$(PVER)
+	$(buildd_static)/python debian/mkbinfmtconf.py $(PVER) \
+		> $(d_min)/usr/lib/binfmt.d/$(PVER).conf
 else
 	$(PVER) debian/mkbinfmt.py $(PVER) > $(d_min)/usr/share/binfmts/$(PVER)
+	$(PVER) debian/mkbinfmtconf.py $(PVER) > $(d_min)/usr/lib/binfmt.d/$(PVER).conf
 endif
 
 	: # desktop entry
@@ -1514,15 +1527,14 @@ endif
 		| xargs -n 1 $(DEB_HOST_GNU_TYPE)-objcopy -p --remove-section=.gnu.lto_.*
 	dh_strip -a -N$(p_dbg) -N$(p_ldbg) -Xdebug -Xdbg --dbg-package=$(p_dbg)
 	mkdir -p $(d_dbg)/usr/share/gdb/auto-load/usr/bin
-	cp Tools/gdb/libpython.py $(d_dbg)/usr/share/gdb/auto-load/usr/bin/$(PVER)m-gdb.py
-	ln -sf $(PVER)m-gdb.py $(d_dbg)/usr/share/gdb/auto-load/usr/bin/$(PVER)-gdb.py
-	ln -sf $(PVER)m-gdb.py $(d_dbg)/usr/share/gdb/auto-load/usr/bin/$(PVER)dm-gdb.py
-	ln -sf $(PVER)m-gdb.py $(d_dbg)/usr/share/gdb/auto-load/usr/bin/$(PVER)-dbg-gdb.py
+	cp Tools/gdb/libpython.py $(d_dbg)/usr/share/gdb/auto-load/usr/bin/$(PVER)-gdb.py
+	ln -sf $(PVER)-gdb.py $(d_dbg)/usr/share/gdb/auto-load/usr/bin/$(PVER)d-gdb.py
+	ln -sf $(PVER)-gdb.py $(d_dbg)/usr/share/gdb/auto-load/usr/bin/$(PVER)-dbg-gdb.py
 	mkdir -p $(d_dbg)/usr/share/gdb/auto-load/usr/lib/$(DEB_HOST_MULTIARCH)
-	ln -sf ../../bin/$(PVER)m-gdb.py \
-		$(d_dbg)/usr/share/gdb/auto-load/usr/lib/$(DEB_HOST_MULTIARCH)/lib$(PVER)m.so.1.0-gdb.py
-	ln -sf ../../bin/$(PVER)m-gdb.py \
-		$(d_dbg)/usr/share/gdb/auto-load/usr/lib/$(DEB_HOST_MULTIARCH)/lib$(PVER)dm.so.1.0-gdb.py
+	ln -sf ../../bin/$(PVER)-gdb.py \
+		$(d_dbg)/usr/share/gdb/auto-load/usr/lib/$(DEB_HOST_MULTIARCH)/lib$(PVER).so.1.0-gdb.py
+	ln -sf ../../bin/$(PVER)-gdb.py \
+		$(d_dbg)/usr/share/gdb/auto-load/usr/lib/$(DEB_HOST_MULTIARCH)/lib$(PVER)d.so.1.0-gdb.py
 	dh_link -a
 	dh_compress -a -X.py
 	dh_fixperms -a

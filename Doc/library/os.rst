@@ -188,6 +188,11 @@ process and user.
    ``'surrogateescape'`` error handler. Use :data:`environb` if you would like
    to use a different encoding.
 
+   On Windows, the keys are converted to uppercase. This also applies when
+   getting, setting, or deleting an item. For example,
+   ``environ['monty'] = 'python'`` maps the key ``'MONTY'`` to the value
+   ``'python'``.
+
    .. note::
 
       Calling :func:`putenv` directly does not change :data:`os.environ`, so it's better
@@ -291,8 +296,8 @@ process and user.
 
 .. function:: getenv(key, default=None)
 
-   Return the value of the environment variable *key* if it exists, or
-   *default* if it doesn't. *key*, *default* and the result are str. Note that
+   Return the value of the environment variable *key* as a string if it exists, or
+   *default* if it doesn't. *key* is a string. Note that
    since :func:`getenv` uses :data:`os.environ`, the mapping of :func:`getenv` is
    similarly also captured on import, and the function may not reflect
    future environment changes.
@@ -306,8 +311,8 @@ process and user.
 
 .. function:: getenvb(key, default=None)
 
-   Return the value of the environment variable *key* if it exists, or
-   *default* if it doesn't. *key*, *default* and the result are bytes. Note that
+   Return the value of the environment variable *key* as bytes if it exists, or
+   *default* if it doesn't. *key* must be bytes. Note that
    since :func:`getenvb` uses :data:`os.environb`, the mapping of :func:`getenvb` is
    similarly also captured on import, and the function may not reflect
    future environment changes.
@@ -2256,7 +2261,7 @@ features:
 .. function:: remove(path, *, dir_fd=None)
 
    Remove (delete) the file *path*.  If *path* is a directory, an
-   :exc:`IsADirectoryError` is raised.  Use :func:`rmdir` to remove directories.
+   :exc:`OSError` is raised.  Use :func:`rmdir` to remove directories.
    If the file does not exist, a :exc:`FileNotFoundError` is raised.
 
    This function can support :ref:`paths relative to directory descriptors
@@ -2302,6 +2307,8 @@ features:
    will fail with an :exc:`OSError` subclass in a number of cases:
 
    On Windows, if *dst* exists a :exc:`FileExistsError` is always raised.
+   The operation may fail if *src* and *dst* are on different filesystems. Use
+   :func:`shutil.move` to support moves to a different filesystem.
 
    On Unix, if *src* is a file and *dst* is a directory or vice-versa, an
    :exc:`IsADirectoryError` or a :exc:`NotADirectoryError` will be raised
@@ -2439,9 +2446,9 @@ features:
    .. note::
 
       On Unix-based systems, :func:`scandir` uses the system's
-      `opendir() <http://pubs.opengroup.org/onlinepubs/009695399/functions/opendir.html>`_
+      `opendir() <https://pubs.opengroup.org/onlinepubs/009695399/functions/opendir.html>`_
       and
-      `readdir() <http://pubs.opengroup.org/onlinepubs/009695399/functions/readdir_r.html>`_
+      `readdir() <https://pubs.opengroup.org/onlinepubs/009695399/functions/readdir_r.html>`_
       functions. On Windows, it uses the Win32
       `FindFirstFileW <https://msdn.microsoft.com/en-us/library/windows/desktop/aa364418(v=vs.85).aspx>`_
       and
@@ -3107,7 +3114,7 @@ features:
    system records access and modification times; see :func:`~os.stat`. The best
    way to preserve exact times is to use the *st_atime_ns* and *st_mtime_ns*
    fields from the :func:`os.stat` result object with the *ns* parameter to
-   `utime`.
+   :func:`utime`.
 
    This function can support :ref:`specifying a file descriptor <path_fd>`,
    :ref:`paths relative to directory descriptors <dir_fd>` and :ref:`not
@@ -3135,7 +3142,8 @@ features:
    filenames)``.
 
    *dirpath* is a string, the path to the directory.  *dirnames* is a list of the
-   names of the subdirectories in *dirpath* (excluding ``'.'`` and ``'..'``).
+   names of the subdirectories in *dirpath* (including symlinks to directories,
+   and excluding ``'.'`` and ``'..'``).
    *filenames* is a list of the names of the non-directory files in *dirpath*.
    Note that the names in the lists contain no path components.  To get a full path
    (which begins with *top*) to a file or directory in *dirpath*, do
@@ -3650,7 +3658,7 @@ to be ignored.
 
    .. note::
 
-      The standard way to exit is ``sys.exit(n)``.  :func:`_exit` should
+      The standard way to exit is :func:`sys.exit(n) <sys.exit>`.  :func:`!_exit` should
       normally only be used in the child process after a :func:`fork`.
 
 The following exit codes are defined and can be used with :func:`_exit`,
@@ -3983,7 +3991,7 @@ written in Python, such as a mail server's external command delivery program.
    library :c:data:`POSIX_SPAWN_RESETIDS` flag.
 
    If the *setsid* argument is ``True``, it will create a new session ID
-   for `posix_spawn`. *setsid* requires :c:data:`POSIX_SPAWN_SETSID`
+   for ``posix_spawn``. *setsid* requires :c:data:`POSIX_SPAWN_SETSID`
    or :c:data:`POSIX_SPAWN_SETSID_NP` flag. Otherwise, :exc:`NotImplementedError`
    is raised.
 
@@ -4870,7 +4878,7 @@ Random numbers
    :py:data:`GRND_NONBLOCK`.
 
    See also the `Linux getrandom() manual page
-   <http://man7.org/linux/man-pages/man2/getrandom.2.html>`_.
+   <https://man7.org/linux/man-pages/man2/getrandom.2.html>`_.
 
    .. availability:: Linux 3.17 and newer.
 

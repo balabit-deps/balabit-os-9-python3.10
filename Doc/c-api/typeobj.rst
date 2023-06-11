@@ -7,8 +7,8 @@ Type Objects
 
 Perhaps one of the most important structures of the Python object system is the
 structure that defines a new type: the :c:type:`PyTypeObject` structure.  Type
-objects can be handled using any of the :c:func:`PyObject_\*` or
-:c:func:`PyType_\*` functions, but do not offer much that's interesting to most
+objects can be handled using any of the ``PyObject_*`` or
+``PyType_*`` functions, but do not offer much that's interesting to most
 Python applications. These objects are fundamental to how objects behave, so
 they are very important to the interpreter itself and to any extension module
 that implements new types.
@@ -149,10 +149,16 @@ Quick Reference
    +------------------------------------------------+-----------------------------------+-------------------+---+---+---+---+
 
 .. [#slots]
-   A slot name in parentheses indicates it is (effectively) deprecated.
-   Names in angle brackets should be treated as read-only.
-   Names in square brackets are for internal use only.
-   "<R>" (as a prefix) means the field is required (must be non-``NULL``).
+
+   **()**: A slot name in parentheses indicates it is (effectively) deprecated.
+
+   **<>**: Names in angle brackets should be initially set to ``NULL`` and
+   treated as read-only.
+
+   **[]**: Names in square brackets are for internal use only.
+
+   **<R>** (as a prefix) means the field is required (must be non-``NULL``).
+
 .. [#cols] Columns:
 
    **"O"**:  set on :c:type:`PyBaseObject_Type`
@@ -444,6 +450,7 @@ slot typedefs
 |                             |                             |                      |
 |                             |    :c:type:`PyObject` *     |                      |
 |                             |    :c:type:`Py_ssize_t`     |                      |
+|                             |    :c:type:`PyObject` *     |                      |
 +-----------------------------+-----------------------------+----------------------+
 | :c:type:`objobjproc`        | .. line-block::             | int                  |
 |                             |                             |                      |
@@ -1212,6 +1219,17 @@ and :c:type:`PyType_Type` effectively act as defaults.)
       **Inheritance:**
 
       This flag is not inherited.
+      However, subclasses will not be instantiable unless they provide a
+      non-NULL :c:member:`~PyTypeObject.tp_new` (which is only possible
+      via the C API).
+
+      .. note::
+
+         To disallow instantiating a class directly but allow instantiating
+         its subclasses (e.g. for an :term:`abstract base class`),
+         do not use this flag.
+         Instead, make :c:member:`~PyTypeObject.tp_new` only succeed for
+         subclasses.
 
       .. versionadded:: 3.10
 
@@ -1483,8 +1501,8 @@ and :c:type:`PyType_Type` effectively act as defaults.)
    If the instances of this type are weakly referenceable, this field is greater
    than zero and contains the offset in the instance structure of the weak
    reference list head (ignoring the GC header, if present); this offset is used by
-   :c:func:`PyObject_ClearWeakRefs` and the :c:func:`PyWeakref_\*` functions.  The
-   instance structure needs to include a field of type :c:type:`PyObject*` which is
+   :c:func:`PyObject_ClearWeakRefs` and the ``PyWeakref_*`` functions.  The
+   instance structure needs to include a field of type :c:expr:`PyObject*` which is
    initialized to ``NULL``.
 
    Do not confuse this field with :c:member:`~PyTypeObject.tp_weaklist`; that is the list head for
@@ -1898,8 +1916,19 @@ and :c:type:`PyType_Type` effectively act as defaults.)
 
    Tuple of base types.
 
-   This is set for types created by a class statement.  It should be ``NULL`` for
-   statically defined types.
+   This field should be set to ``NULL`` and treated as read-only.
+   Python will fill it in when the type is :c:func:`initialized <PyType_Ready>`.
+
+   For dynamically created classes, the ``Py_tp_bases``
+   :c:type:`slot <PyType_Slot>` can be used instead of the *bases* argument
+   of :c:func:`PyType_FromSpecWithBases`.
+   The argument form is preferred.
+
+   .. warning::
+
+      Multiple inheritance does not work well for statically defined types.
+      If you set ``tp_bases`` to a tuple, Python will not raise an error,
+      but some slots will only be inherited from the first base.
 
    **Inheritance:**
 
@@ -1911,6 +1940,8 @@ and :c:type:`PyType_Type` effectively act as defaults.)
    Tuple containing the expanded set of base types, starting with the type itself
    and ending with :class:`object`, in Method Resolution Order.
 
+   This field should be set to ``NULL`` and treated as read-only.
+   Python will fill it in when the type is :c:func:`initialized <PyType_Ready>`.
 
    **Inheritance:**
 
@@ -1990,9 +2021,6 @@ and :c:type:`PyType_Type` effectively act as defaults.)
           PyErr_Restore(error_type, error_value, error_traceback);
       }
 
-   For this field to be taken into account (even through inheritance),
-   you must also set the :const:`Py_TPFLAGS_HAVE_FINALIZE` flags bit.
-
    Also, note that, in a garbage collected Python,
    :c:member:`~PyTypeObject.tp_dealloc` may be called from
    any Python thread, not just the thread which created the object (if the object
@@ -2009,6 +2037,12 @@ and :c:type:`PyType_Type` effectively act as defaults.)
    This field is inherited by subtypes.
 
    .. versionadded:: 3.4
+
+   .. versionchanged:: 3.8
+
+      Before version 3.8 it was necessary to set the
+      :const:`Py_TPFLAGS_HAVE_FINALIZE` flags bit in order for this field to be
+      used.  This is no longer required.
 
    .. seealso:: "Safe object finalization" (:pep:`442`)
 
@@ -2047,9 +2081,9 @@ This results in types that are limited relative to types defined in Python:
   :ref:`sub-interpreters <sub-interpreter-support>`, so they should not
   include any subinterpreter-specific state.
 
-Also, since :c:type:`PyTypeObject` is not part of the :ref:`stable ABI <stable>`,
-any extension modules using static types must be compiled for a specific
-Python minor version.
+Also, since :c:type:`PyTypeObject` is only part of the :ref:`Limited API
+<stable>` as an opaque struct, any extension modules using static types must be
+compiled for a specific Python minor version.
 
 
 .. _heap-types:
@@ -2324,13 +2358,13 @@ Buffer Object Structures
    steps:
 
    (1) Check if the request can be met. If not, raise :c:data:`PyExc_BufferError`,
-       set :c:data:`view->obj` to ``NULL`` and return ``-1``.
+       set :c:expr:`view->obj` to ``NULL`` and return ``-1``.
 
    (2) Fill in the requested fields.
 
    (3) Increment an internal counter for the number of exports.
 
-   (4) Set :c:data:`view->obj` to *exporter* and increment :c:data:`view->obj`.
+   (4) Set :c:expr:`view->obj` to *exporter* and increment :c:expr:`view->obj`.
 
    (5) Return ``0``.
 
@@ -2338,10 +2372,10 @@ Buffer Object Structures
    schemes can be used:
 
    * Re-export: Each member of the tree acts as the exporting object and
-     sets :c:data:`view->obj` to a new reference to itself.
+     sets :c:expr:`view->obj` to a new reference to itself.
 
    * Redirect: The buffer request is redirected to the root object of the
-     tree. Here, :c:data:`view->obj` will be a new reference to the root
+     tree. Here, :c:expr:`view->obj` will be a new reference to the root
      object.
 
    The individual fields of *view* are described in section
@@ -2383,7 +2417,7 @@ Buffer Object Structures
    *view* argument.
 
 
-   This function MUST NOT decrement :c:data:`view->obj`, since that is
+   This function MUST NOT decrement :c:expr:`view->obj`, since that is
    done automatically in :c:func:`PyBuffer_Release` (this scheme is
    useful for breaking reference cycles).
 
@@ -2562,7 +2596,7 @@ Slot Type typedefs
 
 .. c:type:: PyObject *(*ssizeargfunc)(PyObject *, Py_ssize_t)
 
-.. c:type:: int (*ssizeobjargproc)(PyObject *, Py_ssize_t)
+.. c:type:: int (*ssizeobjargproc)(PyObject *, Py_ssize_t, PyObject *)
 
 .. c:type:: int (*objobjproc)(PyObject *, PyObject *)
 

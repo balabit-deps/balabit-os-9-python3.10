@@ -6,7 +6,7 @@ Forwarded: not-needed
 
 --- a/Lib/ensurepip/__init__.py
 +++ b/Lib/ensurepip/__init__.py
-@@ -8,6 +8,34 @@
+@@ -8,6 +8,34 @@ import tempfile
  from importlib import resources
  
  
@@ -41,7 +41,7 @@ Forwarded: not-needed
  
  __all__ = ["version", "bootstrap"]
  _PACKAGE_NAMES = ('setuptools', 'pip')
-@@ -137,6 +165,11 @@
+@@ -147,6 +175,11 @@ def _bootstrap(*, root=None, upgrade=Fal
  
      Note that calling this function will alter both sys.path and os.environ.
      """
@@ -55,19 +55,15 @@ Forwarded: not-needed
  
 --- a/Lib/venv/__init__.py
 +++ b/Lib/venv/__init__.py
-@@ -309,7 +309,31 @@
-         # intended for the global Python environment
-         cmd = [context.env_exec_cmd, '-Im', 'ensurepip', '--upgrade',
-                                                          '--default-pip']
--        subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-+        # Debian 2015-09-18 barry@debian.org: <python>-venv is a separate
-+        # binary package which might not be installed.  In that case, the
-+        # following command will produce an unhelpful error.  Let's make it
-+        # more user friendly.
+@@ -325,8 +325,26 @@ class EnvBuilder:
+ 
+     def _setup_pip(self, context):
+         """Installs or upgrades pip in a virtual environment"""
+-        self._call_new_python(context, '-m', 'ensurepip', '--upgrade',
+-                              '--default-pip', stderr=subprocess.STDOUT)
 +        try:
-+            subprocess.check_output(
-+                cmd, stderr=subprocess.STDOUT,
-+                universal_newlines=True)
++            self._call_new_python(context, '-m', 'ensurepip', '--upgrade',
++                                  '--default-pip', stderr=subprocess.STDOUT)
 +        except subprocess.CalledProcessError:
 +            stdlib = sysconfig.get_path('stdlib')
 +            if not os.path.exists(f'{stdlib}/ensurepip/__main__.py'):
@@ -82,7 +78,7 @@ Forwarded: not-needed
 +package, recreate your virtual environment.
 +
 +Failing command: {}
-+""".format(sysconfig.get_python_version(), cmd))
++""".format(sysconfig.get_python_version(), context.env_exec_cmd))
 +                sys.exit(1)
 +            raise
  

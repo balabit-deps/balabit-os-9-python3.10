@@ -154,7 +154,7 @@ The :class:`date`, :class:`.datetime`, :class:`.time`, and :class:`timezone` typ
 share these common features:
 
 - Objects of these types are immutable.
-- Objects of these types are hashable, meaning that they can be used as
+- Objects of these types are :term:`hashable`, meaning that they can be used as
   dictionary keys.
 - Objects of these types support efficient pickling via the :mod:`pickle` module.
 
@@ -1342,7 +1342,7 @@ Instance methods:
 
       Because naive ``datetime`` objects are treated by many ``datetime`` methods
       as local times, it is preferred to use aware datetimes to represent times
-      in UTC; as a result, using ``utcfromtimetuple`` may give misleading
+      in UTC; as a result, using :meth:`datetime.utctimetuple` may give misleading
       results. If you have a naive ``datetime`` representing UTC, use
       ``datetime.replace(tzinfo=timezone.utc)`` to make it aware, at which point
       you can use :meth:`.datetime.timetuple`.
@@ -2246,7 +2246,7 @@ where historical changes have been made to civil time.
   two digits of ``offset.hours`` and ``offset.minutes`` respectively.
 
   .. versionchanged:: 3.6
-     Name generated from ``offset=timedelta(0)`` is now plain `'UTC'`, not
+     Name generated from ``offset=timedelta(0)`` is now plain ``'UTC'``, not
      ``'UTC+00:00'``.
 
 
@@ -2570,7 +2570,7 @@ Notes:
 
 (9)
    When used with the :meth:`strptime` method, the leading zero is optional
-   for  formats ``%d``, ``%m``, ``%H``, ``%I``, ``%M``, ``%S``, ``%J``, ``%U``,
+   for  formats ``%d``, ``%m``, ``%H``, ``%I``, ``%M``, ``%S``, ``%j``, ``%U``,
    ``%W``, and ``%V``. Format ``%y`` does require a leading zero.
 
 .. rubric:: Footnotes
