@@ -192,9 +192,8 @@ those made in the suite of the for-loop::
 
 Names in the target list are not deleted when the loop is finished, but if the
 sequence is empty, they will not have been assigned to at all by the loop.  Hint:
-the built-in function :func:`range` returns an iterator of integers suitable to
-emulate the effect of Pascal's ``for i := a to b do``; e.g., ``list(range(3))``
-returns the list ``[0, 1, 2]``.
+the built-in type :func:`range` represents immutable arithmetic sequences of integers.
+For instance, iterating ``range(3)`` successively yields 0, 1, and then 2.
 
 
 .. _try:
@@ -416,7 +415,7 @@ The execution of the :keyword:`with` statement with one "item" proceeds as follo
       method returns without an error, then :meth:`__exit__` will always be
       called. Thus, if an error occurs during the assignment to the target list,
       it will be treated the same as an error occurring within the suite would
-      be. See step 6 below.
+      be. See step 7 below.
 
 #. The suite is executed.
 
@@ -503,6 +502,7 @@ The :keyword:`!match` statement
    keyword: if
    keyword: as
    pair: match; case
+   single: as; match statement
    single: : (colon); compound statement
 
 .. versionadded:: 3.10
@@ -729,7 +729,7 @@ keyword against a subject.  Syntax:
 
 If the OR pattern fails, the AS pattern fails.  Otherwise, the AS pattern binds
 the subject to the name on the right of the as keyword and succeeds.
-``capture_pattern`` cannot be a a ``_``.
+``capture_pattern`` cannot be a ``_``.
 
 In simple terms ``P as NAME`` will match with ``P``, and on success it will
 set ``NAME = <subject>``.
@@ -1074,7 +1074,7 @@ subject value:
 
    These classes accept a single positional argument, and the pattern there is matched
    against the whole object rather than an attribute. For example ``int(0|1)`` matches
-   the value ``0``, but not the values ``0.0`` or ``False``.
+   the value ``0``, but not the value ``0.0``.
 
 In simple terms ``CLS(P1, attr=P2)`` matches only if the following happens:
 

@@ -2691,6 +2691,7 @@ compiler_jump_if(struct compiler *c, expr_ty e, basicblock *next, int cond)
         return 1;
     }
     case Compare_kind: {
+        SET_LOC(c, e);
         Py_ssize_t i, n = asdl_seq_LEN(e->v.Compare.ops) - 1;
         if (n > 0) {
             if (!check_compare(c, e)) {
@@ -3029,12 +3030,14 @@ static int
 compiler_break(struct compiler *c)
 {
     struct fblockinfo *loop = NULL;
+    int origin_loc = c->u->u_lineno;
     /* Emit instruction with line number */
     ADDOP(c, NOP);
     if (!compiler_unwind_fblock_stack(c, 0, &loop)) {
         return 0;
     }
     if (loop == NULL) {
+        c->u->u_lineno = origin_loc;
         return compiler_error(c, "'break' outside loop");
     }
     if (!compiler_unwind_fblock(c, loop, 0)) {
@@ -3049,12 +3052,14 @@ static int
 compiler_continue(struct compiler *c)
 {
     struct fblockinfo *loop = NULL;
+    int origin_loc = c->u->u_lineno;
     /* Emit instruction with line number */
     ADDOP(c, NOP);
     if (!compiler_unwind_fblock_stack(c, 0, &loop)) {
         return 0;
     }
     if (loop == NULL) {
+        c->u->u_lineno = origin_loc;
         return compiler_error(c, "'continue' not properly in loop");
     }
     ADDOP_JUMP(c, JUMP_ABSOLUTE, loop->fb_block);

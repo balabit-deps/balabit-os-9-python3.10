@@ -150,11 +150,14 @@ of available options is shown below.
 |                           |                                      | Python X.Y`              |
 +---------------------------+--------------------------------------+--------------------------+
 | DefaultJustForMeTargetDir | The default install directory for    | :file:`%LocalAppData%\\\ |
-|                           | just-for-me installs                 | Programs\\PythonXY` or   |
+|                           | just-for-me installs                 | Programs\\Python\\\      |
+|                           |                                      | PythonXY` or             |
 |                           |                                      | :file:`%LocalAppData%\\\ |
-|                           |                                      | Programs\\PythonXY-32` or|
+|                           |                                      | Programs\\Python\\\      |
+|                           |                                      | PythonXY-32` or          |
 |                           |                                      | :file:`%LocalAppData%\\\ |
-|                           |                                      | Programs\\PythonXY-64`   |
+|                           |                                      | Programs\\Python\\\      |
+|                           |                                      | PythonXY-64`             |
 +---------------------------+--------------------------------------+--------------------------+
 | DefaultCustomTargetDir    | The default custom install directory | (empty)                  |
 |                           | displayed in the UI                  |                          |
@@ -177,22 +180,26 @@ of available options is shown below.
 | Include_debug             | Install debug binaries               | 0                        |
 +---------------------------+--------------------------------------+--------------------------+
 | Include_dev               | Install developer headers and        | 1                        |
-|                           | libraries                            |                          |
+|                           | libraries. Omitting this may lead to |                          |
+|                           | an unusable installation.            |                          |
 +---------------------------+--------------------------------------+--------------------------+
 | Include_exe               | Install :file:`python.exe` and       | 1                        |
-|                           | related files                        |                          |
+|                           | related files. Omitting this may     |                          |
+|                           | lead to an unusable installation.    |                          |
 +---------------------------+--------------------------------------+--------------------------+
 | Include_launcher          | Install :ref:`launcher`.             | 1                        |
 +---------------------------+--------------------------------------+--------------------------+
-| InstallLauncherAllUsers   | Installs :ref:`launcher` for all     | 1                        |
-|                           | users.                               |                          |
+| InstallLauncherAllUsers   | Installs the launcher for all        | 1                        |
+|                           | users. Also requires                 |                          |
+|                           | ``Include_launcher`` to be set to 1  |                          |
 +---------------------------+--------------------------------------+--------------------------+
 | Include_lib               | Install standard library and         | 1                        |
-|                           | extension modules                    |                          |
+|                           | extension modules. Omitting this may |                          |
+|                           | lead to an unusable installation.    |                          |
 +---------------------------+--------------------------------------+--------------------------+
 | Include_pip               | Install bundled pip and setuptools   | 1                        |
 +---------------------------+--------------------------------------+--------------------------+
-| Include_symbols           | Install debugging symbols (`*`.pdb)  | 0                        |
+| Include_symbols           | Install debugging symbols (``*.pdb``)| 0                        |
 +---------------------------+--------------------------------------+--------------------------+
 | Include_tcltk             | Install Tcl/Tk support and IDLE      | 1                        |
 +---------------------------+--------------------------------------+--------------------------+
@@ -773,7 +780,7 @@ is printed.  Now try changing the first line to be:
 Re-executing the command should now print the latest Python 3.x information.
 As with the above command-line examples, you can specify a more explicit
 version qualifier.  Assuming you have Python 3.7 installed, try changing
-the first line to ``#! python3.7`` and you should find the |version|
+the first line to ``#! python3.7`` and you should find the 3.7
 version information printed.
 
 Note that unlike interactive use, a bare "python" will use the latest
@@ -1161,7 +1168,7 @@ With ongoing development of Python, some platforms that used to be supported
 earlier are no longer supported (due to the lack of users or developers).
 Check :pep:`11` for details on all unsupported platforms.
 
-* `Windows CE <http://pythonce.sourceforge.net/>`_ is
+* `Windows CE <https://pythonce.sourceforge.net/>`_ is
   `no longer supported <https://github.com/python/cpython/issues/71542>`__
   since Python 3 (if it ever was).
 * The `Cygwin <https://cygwin.com/>`_ installer offers to install the
