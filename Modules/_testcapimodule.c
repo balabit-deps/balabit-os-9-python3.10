@@ -2800,7 +2800,7 @@ test_PyDateTime_GET(PyObject *self, PyObject *obj)
     month = PyDateTime_GET_MONTH(obj);
     day = PyDateTime_GET_DAY(obj);
 
-    return Py_BuildValue("(lll)", year, month, day);
+    return Py_BuildValue("(iii)", year, month, day);
 }
 
 static PyObject *
@@ -2814,7 +2814,7 @@ test_PyDateTime_DATE_GET(PyObject *self, PyObject *obj)
     microsecond = PyDateTime_DATE_GET_MICROSECOND(obj);
     PyObject *tzinfo = PyDateTime_DATE_GET_TZINFO(obj);
 
-    return Py_BuildValue("(llllO)", hour, minute, second, microsecond, tzinfo);
+    return Py_BuildValue("(iiiiO)", hour, minute, second, microsecond, tzinfo);
 }
 
 static PyObject *
@@ -2828,7 +2828,7 @@ test_PyDateTime_TIME_GET(PyObject *self, PyObject *obj)
     microsecond = PyDateTime_TIME_GET_MICROSECOND(obj);
     PyObject *tzinfo = PyDateTime_TIME_GET_TZINFO(obj);
 
-    return Py_BuildValue("(llllO)", hour, minute, second, microsecond, tzinfo);
+    return Py_BuildValue("(iiiiO)", hour, minute, second, microsecond, tzinfo);
 }
 
 static PyObject *
@@ -2840,7 +2840,7 @@ test_PyDateTime_DELTA_GET(PyObject *self, PyObject *obj)
     seconds = PyDateTime_DELTA_GET_SECONDS(obj);
     microseconds = PyDateTime_DELTA_GET_MICROSECONDS(obj);
 
-    return Py_BuildValue("(lll)", days, seconds, microseconds);
+    return Py_BuildValue("(iii)", days, seconds, microseconds);
 }
 
 /* test_thread_state spawns a thread of its own, and that thread releases
@@ -4368,12 +4368,19 @@ temporary_c_thread(void *data)
     PyThread_exit_thread();
 }
 
+static test_c_thread_t test_c_thread;
+
 static PyObject *
-call_in_temporary_c_thread(PyObject *self, PyObject *callback)
+call_in_temporary_c_thread(PyObject *self, PyObject *args)
 {
     PyObject *res = NULL;
-    test_c_thread_t test_c_thread;
+    PyObject *callback = NULL;
     long thread;
+    int wait = 1;
+    if (!PyArg_ParseTuple(args, "O|i", &callback, &wait))
+    {
+        return NULL;
+    }
 
     test_c_thread.start_event = PyThread_allocate_lock();
     test_c_thread.exit_event = PyThread_allocate_lock();
@@ -4400,6 +4407,10 @@ call_in_temporary_c_thread(PyObject *self, PyObject *callback)
     PyThread_acquire_lock(test_c_thread.start_event, 1);
     PyThread_release_lock(test_c_thread.start_event);
 
+    if (!wait) {
+        Py_RETURN_NONE;
+    }
+
     Py_BEGIN_ALLOW_THREADS
         PyThread_acquire_lock(test_c_thread.exit_event, 1);
         PyThread_release_lock(test_c_thread.exit_event);
@@ -4410,11 +4421,30 @@ call_in_temporary_c_thread(PyObject *self, PyObject *callback)
 
 exit:
     Py_CLEAR(test_c_thread.callback);
-    if (test_c_thread.start_event)
+    if (test_c_thread.start_event) {
         PyThread_free_lock(test_c_thread.start_event);
-    if (test_c_thread.exit_event)
+        test_c_thread.start_event = NULL;
+    }
+    if (test_c_thread.exit_event) {
         PyThread_free_lock(test_c_thread.exit_event);
+        test_c_thread.exit_event = NULL;
+    }
     return res;
+}
+
+static PyObject *
+join_temporary_c_thread(PyObject *self, PyObject *Py_UNUSED(ignored))
+{
+    Py_BEGIN_ALLOW_THREADS
+        PyThread_acquire_lock(test_c_thread.exit_event, 1);
+        PyThread_release_lock(test_c_thread.exit_event);
+    Py_END_ALLOW_THREADS
+    Py_CLEAR(test_c_thread.callback);
+    PyThread_free_lock(test_c_thread.start_event);
+    test_c_thread.start_event = NULL;
+    PyThread_free_lock(test_c_thread.exit_event);
+    test_c_thread.exit_event = NULL;
+    Py_RETURN_NONE;
 }
 
 /* marshal */
@@ -5155,6 +5185,40 @@ get_mapping_items(PyObject* self, PyObject *obj)
     return PyMapping_Items(obj);
 }
 
+static PyObject *
+test_mapping_has_key_string(PyObject *self, PyObject *Py_UNUSED(args))
+{
+    PyObject *context = PyDict_New();
+    PyObject *val = PyLong_FromLong(1);
+
+    // Since this uses `const char*` it is easier to test this in C:
+    PyDict_SetItemString(context, "a", val);
+    if (!PyMapping_HasKeyString(context, "a")) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Existing mapping key does not exist");
+        return NULL;
+    }
+    if (PyMapping_HasKeyString(context, "b")) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Missing mapping key exists");
+        return NULL;
+    }
+
+    Py_DECREF(val);
+    Py_DECREF(context);
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+mapping_has_key(PyObject* self, PyObject *args)
+{
+    PyObject *context, *key;
+    if (!PyArg_ParseTuple(args, "OO", &context, &key)) {
+        return NULL;
+    }
+    return PyLong_FromLong(PyMapping_HasKey(context, key));
+}
+
 
 static PyObject *
 test_pythread_tss_key_state(PyObject *self, PyObject *args)
@@ -5475,8 +5539,10 @@ meth_fastcall_keywords(PyObject* self, PyObject* const* args,
     if (pyargs == NULL) {
         return NULL;
     }
+    assert(args != NULL || nargs == 0);
+    PyObject* const* args_offset = args == NULL ? NULL : args + nargs;
     PyObject *pykwargs = PyObject_Vectorcall((PyObject*)&PyDict_Type,
-                                              args + nargs, 0, kwargs);
+                                              args_offset, 0, kwargs);
     return Py_BuildValue("NNN", _null_to_none(self), pyargs, pykwargs);
 }
 
@@ -5635,6 +5701,7 @@ test_fatal_error(PyObject *self, PyObject *args)
 static PyObject *test_buildvalue_issue38913(PyObject *, PyObject *);
 static PyObject *getargs_s_hash_int(PyObject *, PyObject *, PyObject*);
 static PyObject *getargs_s_hash_int2(PyObject *, PyObject *, PyObject*);
+static PyObject *gh_99240_clear_args(PyObject *, PyObject *);
 
 static PyMethodDef TestMethods[] = {
     {"raise_exception",         raise_exception,                 METH_VARARGS},
@@ -5748,6 +5815,7 @@ static PyMethodDef TestMethods[] = {
       METH_VARARGS|METH_KEYWORDS},
     {"getargs_s_hash_int2",      (PyCFunction)(void(*)(void))getargs_s_hash_int2,
       METH_VARARGS|METH_KEYWORDS},
+    {"gh_99240_clear_args",     gh_99240_clear_args,             METH_VARARGS},
     {"getargs_z",               getargs_z,                       METH_VARARGS},
     {"getargs_z_star",          getargs_z_star,                  METH_VARARGS},
     {"getargs_z_hash",          getargs_z_hash,                  METH_VARARGS},
@@ -5840,8 +5908,9 @@ static PyMethodDef TestMethods[] = {
     {"docstring_with_signature_with_defaults",
         (PyCFunction)test_with_docstring, METH_NOARGS,
         docstring_with_signature_with_defaults},
-    {"call_in_temporary_c_thread", call_in_temporary_c_thread, METH_O,
+    {"call_in_temporary_c_thread", call_in_temporary_c_thread, METH_VARARGS,
      PyDoc_STR("set_error_class(error_class) -> None")},
+    {"join_temporary_c_thread", join_temporary_c_thread, METH_NOARGS},
     {"pymarshal_write_long_to_file",
         pymarshal_write_long_to_file, METH_VARARGS},
     {"pymarshal_write_object_to_file",
@@ -5892,6 +5961,8 @@ static PyMethodDef TestMethods[] = {
     {"get_mapping_keys", get_mapping_keys, METH_O},
     {"get_mapping_values", get_mapping_values, METH_O},
     {"get_mapping_items", get_mapping_items, METH_O},
+    {"test_mapping_has_key_string", test_mapping_has_key_string, METH_NOARGS},
+    {"mapping_has_key", mapping_has_key, METH_VARARGS},
     {"test_pythread_tss_key_state", test_pythread_tss_key_state, METH_VARARGS},
     {"hamt", new_hamt, METH_NOARGS},
     {"bad_get", (PyCFunction)(void(*)(void))bad_get, METH_FASTCALL},
@@ -7460,5 +7531,23 @@ getargs_s_hash_int2(PyObject *self, PyObject *args, PyObject *kwargs)
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "w*|(s#)i", keywords, &buf, &s, &len, &i))
         return NULL;
     PyBuffer_Release(&buf);
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+gh_99240_clear_args(PyObject *self, PyObject *args)
+{
+    char *a = NULL;
+    char *b = NULL;
+
+    if (!PyArg_ParseTuple(args, "eses", "idna", &a, "idna", &b)) {
+        if (a || b) {
+            PyErr_Clear();
+            PyErr_SetString(PyExc_AssertionError, "Arguments are not cleared.");
+        }
+        return NULL;
+    }
+    PyMem_Free(a);
+    PyMem_Free(b);
     Py_RETURN_NONE;
 }

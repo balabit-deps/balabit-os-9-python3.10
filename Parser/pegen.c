@@ -1,5 +1,6 @@
 #include <Python.h>
 #include "pycore_ast.h"           // _PyAST_Validate(),
+#include "pycore_pystate.h"       // _PyThreadState_GET()
 #include <errcode.h>
 #include "tokenizer.h"
 
@@ -547,7 +548,7 @@ _PyPegen_raise_error_known_location(Parser *p, PyObject *errtype,
                          byte_offset_to_character_offset(error_line, end_col_offset) :
                          end_col_number;
     }
-    tmp = Py_BuildValue("(OiiNii)", p->tok->filename, lineno, col_number, error_line, end_lineno, end_col_number);
+    tmp = Py_BuildValue("(OnnNnn)", p->tok->filename, lineno, col_number, error_line, end_lineno, end_col_number);
     if (!tmp) {
         goto error;
     }
@@ -808,7 +809,7 @@ _PyPegen_fill_token(Parser *p)
 static long memo_statistics[NSTATISTICS];
 
 void
-_PyPegen_clear_memo_statistics()
+_PyPegen_clear_memo_statistics(void)
 {
     for (int i = 0; i < NSTATISTICS; i++) {
         memo_statistics[i] = 0;
@@ -816,7 +817,7 @@ _PyPegen_clear_memo_statistics()
 }
 
 PyObject *
-_PyPegen_get_memo_statistics()
+_PyPegen_get_memo_statistics(void)
 {
     PyObject *ret = PyList_New(NSTATISTICS);
     if (ret == NULL) {
@@ -1131,6 +1132,28 @@ _PyPegen_number_token(Parser *p)
 
     if (c == NULL) {
         p->error_indicator = 1;
+        PyThreadState *tstate = _PyThreadState_GET();
+        // The only way a ValueError should happen in _this_ code is via
+        // PyLong_FromString hitting a length limit.
+        if (tstate->curexc_type == PyExc_ValueError &&
+            tstate->curexc_value != NULL) {
+            PyObject *type, *value, *tb;
+            // This acts as PyErr_Clear() as we're replacing curexc.
+            PyErr_Fetch(&type, &value, &tb);
+            Py_XDECREF(tb);
+            Py_DECREF(type);
+            /* Intentionally omitting columns to avoid a wall of 1000s of '^'s
+             * on the error message. Nobody is going to overlook their huge
+             * numeric literal once given the line. */
+            RAISE_ERROR_KNOWN_LOCATION(
+                p, PyExc_SyntaxError,
+                t->lineno, -1 /* col_offset */,
+                t->end_lineno, -1 /* end_col_offset */,
+                "%S - Consider hexadecimal for huge integer literals "
+                "to avoid decimal conversion limits.",
+                value);
+            Py_DECREF(value);
+        }
         return NULL;
     }
 
@@ -1305,6 +1328,10 @@ _PyPegen_check_tokenizer_errors(Parser *p) {
         const char *end;
         switch (PyTokenizer_Get(p->tok, &start, &end)) {
             case ERRORTOKEN:
+                if (PyErr_Occurred()) {
+                    ret = -1;
+                    goto exit;
+                }
                 if (p->tok->level != 0) {
                     int error_lineno = p->tok->parenlinenostack[p->tok->level-1];
                     if (current_err_line > error_lineno) {

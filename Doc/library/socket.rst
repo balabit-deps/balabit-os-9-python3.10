@@ -340,7 +340,7 @@ Constants
 
    .. seealso::
 
-      `Secure File Descriptor Handling <http://udrepper.livejournal.com/20407.html>`_
+      `Secure File Descriptor Handling <https://udrepper.livejournal.com/20407.html>`_
       for a more thorough explanation.
 
    .. availability:: Linux >= 2.6.27.
@@ -604,7 +604,7 @@ The following functions all create :ref:`socket objects <socket-objects>`.
       When :const:`SOCK_NONBLOCK` or :const:`SOCK_CLOEXEC`
       bit flags are applied to *type* they are cleared, and
       :attr:`socket.type` will not reflect them.  They are still passed
-      to the underlying system `socket()` call.  Therefore,
+      to the underlying system ``socket()`` call.  Therefore,
 
       ::
 
@@ -670,8 +670,8 @@ The following functions all create :ref:`socket objects <socket-objects>`.
    ``(host, port)``) and return the socket object.
 
    *family* should be either :data:`AF_INET` or :data:`AF_INET6`.
-   *backlog* is the queue size passed to :meth:`socket.listen`; when ``0``
-   a default reasonable value is chosen.
+   *backlog* is the queue size passed to :meth:`socket.listen`; if not specified
+   , a default reasonable value is chosen.
    *reuse_port* dictates whether to set the :data:`SO_REUSEPORT` socket option.
 
    If *dualstack_ipv6* is true and the platform supports it the socket will
@@ -948,7 +948,7 @@ The :mod:`socket` module also offers various network-related services:
    Convert an IPv4 address from dotted-quad string format (for example,
    '123.45.67.89') to 32-bit packed binary format, as a bytes object four characters in
    length.  This is useful when conversing with a program that uses the standard C
-   library and needs objects of type :c:type:`struct in_addr`, which is the C type
+   library and needs objects of type :c:struct:`in_addr`, which is the C type
    for the 32-bit packed binary this function returns.
 
    :func:`inet_aton` also accepts strings with less than three dots; see the
@@ -967,7 +967,7 @@ The :mod:`socket` module also offers various network-related services:
    Convert a 32-bit packed IPv4 address (a :term:`bytes-like object` four
    bytes in length) to its standard dotted-quad string representation (for example,
    '123.45.67.89').  This is useful when conversing with a program that uses the
-   standard C library and needs objects of type :c:type:`struct in_addr`, which
+   standard C library and needs objects of type :c:struct:`in_addr`, which
    is the C type for the 32-bit packed binary data this function takes as an
    argument.
 
@@ -984,8 +984,8 @@ The :mod:`socket` module also offers various network-related services:
 
    Convert an IP address from its family-specific string format to a packed,
    binary format. :func:`inet_pton` is useful when a library or network protocol
-   calls for an object of type :c:type:`struct in_addr` (similar to
-   :func:`inet_aton`) or :c:type:`struct in6_addr`.
+   calls for an object of type :c:struct:`in_addr` (similar to
+   :func:`inet_aton`) or :c:struct:`in6_addr`.
 
    Supported values for *address_family* are currently :const:`AF_INET` and
    :const:`AF_INET6`. If the IP address string *ip_string* is invalid,
@@ -1005,8 +1005,8 @@ The :mod:`socket` module also offers various network-related services:
    bytes) to its standard, family-specific string representation (for
    example, ``'7.10.0.5'`` or ``'5aef:2b::8'``).
    :func:`inet_ntop` is useful when a library or network protocol returns an
-   object of type :c:type:`struct in_addr` (similar to :func:`inet_ntoa`) or
-   :c:type:`struct in6_addr`.
+   object of type :c:struct:`in_addr` (similar to :func:`inet_ntoa`) or
+   :c:struct:`in6_addr`.
 
    Supported values for *address_family* are currently :const:`AF_INET` and
    :const:`AF_INET6`. If the bytes object *packed_ip* is not the correct
@@ -1477,7 +1477,7 @@ to sockets.
    ancillary data, items of the form ``(socket.SOL_SOCKET,
    socket.SCM_RIGHTS, fds)``, where *fds* is a :class:`bytes` object
    representing the new file descriptors as a binary array of the
-   native C :c:type:`int` type.  If :meth:`recvmsg` raises an
+   native C :c:expr:`int` type.  If :meth:`recvmsg` raises an
    exception after the system call returns, it will first attempt to
    close any file descriptors received via this mechanism.
 
@@ -1596,7 +1596,7 @@ to sockets.
    much data, if any, was successfully sent.
 
    .. versionchanged:: 3.5
-      The socket timeout is no more reset each time data is sent successfully.
+      The socket timeout is no longer reset each time data is sent successfully.
       The socket timeout is now the maximum total duration to send all data.
 
    .. versionchanged:: 3.5
@@ -1814,8 +1814,8 @@ can be changed by calling :func:`setdefaulttimeout`.
 
 * In *non-blocking mode*, operations fail (with an error that is unfortunately
   system-dependent) if they cannot be completed immediately: functions from the
-  :mod:`select` can be used to know when and whether a socket is available for
-  reading or writing.
+  :mod:`select` module can be used to know when and whether a socket is available
+  for reading or writing.
 
 * In *timeout mode*, operations fail if they cannot be completed within the
   timeout specified for the socket (they raise a :exc:`timeout` exception)
@@ -2004,7 +2004,7 @@ manager protocol instead, open a socket with::
     socket.socket(socket.AF_CAN, socket.SOCK_DGRAM, socket.CAN_BCM)
 
 After binding (:const:`CAN_RAW`) or connecting (:const:`CAN_BCM`) the socket, you
-can use the :meth:`socket.send`, and the :meth:`socket.recv` operations (and
+can use the :meth:`socket.send` and :meth:`socket.recv` operations (and
 their counterparts) on the socket object as usual.
 
 This last example might require special privileges::
