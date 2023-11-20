@@ -40,3 +40,4 @@ fix-py_compile.diff
 reproducible-pyc.diff
 fix-ia64.diff
 gh-78214.diff
+CVE-2023-40217.patch
