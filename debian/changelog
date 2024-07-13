@@ -1,3 +1,16 @@
+python3.10 (3.10.12-1~22.04.4) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: incorrect permission assignment
+    - debian/patches/CVE-2023-6597.patch: fix symlink bug in cleanup.
+    - CVE-2023-6597
+  * SECURITY UPDATE: zipbomb DoS attack
+    - debian/patches/CVE-2024-0450.patch: raise BadZipFile when trying
+      to read an entry that overlaps with other entry or central
+      directory.
+    - CVE-2024-0450
+
+ -- Allen Huang <allen.huang@canonical.com>  Fri, 22 Mar 2024 16:50:05 +0000
+
 python3.10 (3.10.12-1~22.04.3bb1) jammy; urgency=medium
 
   * Balabit patched version
