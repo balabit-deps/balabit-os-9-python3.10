@@ -1,3 +1,17 @@
+python3.10 (3.10.12-1~22.04.5) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: race condition in ssl.SSLContext methods
+    - debian/patches/CVE-2024-0397.patch: fix locking in cert_store_stats
+      and get_ca_certs in Modules/_ssl.c.
+    - CVE-2024-0397
+  * SECURITY UPDATE: is_private and is_global mismatch
+    - debian/patches/CVE-2024-4032.patch: fix "private" (non-global) IP
+      address ranges in Doc/library/ipaddress.rst, Lib/ipaddress.py,
+      Lib/test/test_ipaddress.py.
+    - CVE-2024-4032
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 29 Jul 2024 12:56:48 -0400
+
 python3.10 (3.10.12-1~22.04.4) jammy-security; urgency=medium
 
   * SECURITY UPDATE: incorrect permission assignment
