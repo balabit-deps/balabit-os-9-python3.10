@@ -1,3 +1,38 @@
+python3.10 (3.10.12-1~22.04.6) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: incorrect special character parsing in email module
+    - debian/patches/CVE-2023-27043.patch: reject malformed addresses in
+      Doc/library/email.utils.rst, Lib/email/utils.py,
+      Lib/test/test_email/test_email.py.
+    - CVE-2023-27043
+  * SECURITY UPDATE: ReDoS via specifically-crafted tar archives
+    - debian/patches/CVE-2024-6232.patch: remove backtracking when parsing
+      tarfile headers in Lib/tarfile.py, Lib/test/test_tarfile.py.
+    - CVE-2024-6232
+  * SECURITY UPDATE: header injection via newlines in email module
+    - debian/patches/CVE-2024-6923.patch: encode newlines in headers, and
+      verify headers are sound in Doc/library/email.errors.rst,
+      Doc/library/email.policy.rst, Lib/email/_header_value_parser.py,
+      Lib/email/_policybase.py, Lib/email/errors.py,
+      Lib/email/generator.py, Lib/test/test_email/test_generator.py,
+      Lib/test/test_email/test_policy.py.
+    - CVE-2024-6923
+  * SECURITY UPDATE: resource consumption via cookie parsing
+    - debian/patches/CVE-2024-7592.patch: fix quadratic complexity in
+      parsing quoted cookie values with backslashes in Lib/http/cookies.py,
+      Lib/test/test_http_cookies.py.
+    - CVE-2024-7592
+  * SECURITY UPDATE: infinite loop via crafted zip archive
+    - debian/patches/CVE-2024-8088-1.patch: sanitize names in zipfile.Path
+      in Lib/test/test_zipfile/_path/test_path.py,
+      Lib/zipfile/_path/__init__.py.
+    - debian/patches/CVE-2024-8088-2.patch: replaced SanitizedNames with a
+      more surgical fix in Lib/test/test_zipfile/_path/test_path.py,
+      Lib/zipfile/_path/__init__.py.
+    - CVE-2024-8088
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 11 Sep 2024 11:47:36 -0400
+
 python3.10 (3.10.12-1~22.04.5bb1) jammy; urgency=medium
 
   * Balabit patched version
