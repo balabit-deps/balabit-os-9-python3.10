@@ -1,3 +1,9 @@
+python3.10 (3.10.12-1~22.04.6bb1) jammy; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 21 Sep 2024 02:43:47 +0000
+
 python3.10 (3.10.12-1~22.04.6) jammy-security; urgency=medium
 
   * SECURITY UPDATE: incorrect special character parsing in email module
