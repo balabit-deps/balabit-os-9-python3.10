@@ -1,3 +1,9 @@
+python3.10 (3.10.12-1~22.04.7bb1) jammy; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 30 Nov 2024 03:36:28 +0000
+
 python3.10 (3.10.12-1~22.04.7) jammy-security; urgency=medium
 
   * SECURITY UPDATE: incorrect quoting in venv module
