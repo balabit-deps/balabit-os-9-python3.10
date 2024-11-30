@@ -1,3 +1,15 @@
+python3.10 (3.10.12-1~22.04.7) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: incorrect quoting in venv module
+    - debian/patches/CVE-2024-9287.patch: quote template strings in venv
+      activation scripts in Lib/test/test_venv.py, Lib/venv/__init__.py,
+      Lib/venv/scripts/common/activate, Lib/venv/scripts/nt/activate.bat,
+      Lib/venv/scripts/posix/activate.csh,
+      Lib/venv/scripts/posix/activate.fish.
+    - CVE-2024-9287
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 06 Nov 2024 15:22:13 -0500
+
 python3.10 (3.10.12-1~22.04.6bb1) jammy; urgency=medium
 
   * Balabit patched version
