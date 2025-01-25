@@ -1,3 +1,13 @@
+python3.10 (3.10.12-1~22.04.8) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: incorrect validation of bracketed hosts
+    - debian/patches/CVE-2024-11168.patch: add checks to ensure that
+      bracketed hosts found by urlsplit are of IPv6 or IPvFuture format in
+      Lib/urllib/parse.py, Lib/test/test_urlparse.py.
+    - CVE-2024-11168
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 17 Jan 2025 09:35:34 -0500
+
 python3.10 (3.10.12-1~22.04.7bb1) jammy; urgency=medium
 
   * Balabit patched version
