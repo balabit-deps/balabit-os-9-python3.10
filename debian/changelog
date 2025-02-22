@@ -1,3 +1,9 @@
+python3.10 (3.10.12-1~22.04.9bb1) jammy; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 22 Feb 2025 03:29:03 +0000
+
 python3.10 (3.10.12-1~22.04.9) jammy-security; urgency=medium
 
   * SECURITY UPDATE: urlparse does not flag hostname with square brackets
