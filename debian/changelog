@@ -1,3 +1,14 @@
+python3.10 (3.10.12-1~22.04.9) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: urlparse does not flag hostname with square brackets
+    as incorrect
+    - debian/patches/CVE-2025-0938.patch: disallow square brackets in
+      domain names for parsed URLs in Lib/test/test_urlparse.py,
+      Lib/urllib/parse.py.
+    - CVE-2025-0938
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 04 Feb 2025 09:57:36 -0500
+
 python3.10 (3.10.12-1~22.04.8bb1) jammy; urgency=medium
 
   * Balabit patched version
