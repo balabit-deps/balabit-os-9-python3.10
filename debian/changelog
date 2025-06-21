@@ -1,3 +1,24 @@
+python3.10 (3.10.12-1~22.04.10) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: incorrect address list folding
+    - debian/patches/CVE-2025-1795-1.patch: don't encode list separators in
+      Lib/email/_header_value_parser.py,
+      Lib/test/test_email/test__header_value_parser.py.
+    - debian/patches/CVE-2025-1795-2.patch: fix AttributeError in the email
+      module in Lib/email/_header_value_parser.py,
+      Lib/test/test_email/test__header_value_parser.py.
+    - CVE-2025-1795
+  * SECURITY UPDATE: DoS via bytes.decode with unicode_escape
+    - debian/patches/CVE-2025-4516.patch: fix use-after-free in the
+      unicode-escape decoder with an error handler in
+      Include/cpython/bytesobject.h, Include/cpython/unicodeobject.h,
+      Lib/test/test_codeccallbacks.py, Lib/test/test_codecs.py,
+      Objects/bytesobject.c, Objects/unicodeobject.c,
+      Parser/string_parser.c.
+    - CVE-2025-4516
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Tue, 27 May 2025 13:12:29 -0400
+
 python3.10 (3.10.12-1~22.04.9bb1) jammy; urgency=medium
 
   * Balabit patched version
