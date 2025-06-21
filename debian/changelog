@@ -1,3 +1,9 @@
+python3.10 (3.10.12-1~22.04.10bb1) jammy; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 21 Jun 2025 02:24:43 +0000
+
 python3.10 (3.10.12-1~22.04.10) jammy-security; urgency=medium
 
   * SECURITY UPDATE: incorrect address list folding
