@@ -1,3 +1,16 @@
+python3.10 (3.10.12-1~22.04.11) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: Regular expression denial of service.
+    - debian/patches/CVE-2025-6069.patch: Improve regex parsing in
+      Lib/html/parser.py.
+    - CVE-2025-6069
+  * SECURITY UPDATE: Infinite loop when parsing tar archives.
+    - debian/patches/CVE-2025-8194.patch: Raise exception when count < 0 in
+      Lib/tarfile.py.
+    - CVE-2025-8194
+
+ -- Hlib Korzhynskyy <hlib.korzhynskyy@canonical.com>  Fri, 15 Aug 2025 12:02:43 -0230
+
 python3.10 (3.10.12-1~22.04.10bb1) jammy; urgency=medium
 
   * Balabit patched version
