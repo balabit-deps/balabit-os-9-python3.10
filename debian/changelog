@@ -1,3 +1,9 @@
+python3.10 (3.10.12-1~22.04.11bb1) jammy; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 23 Aug 2025 08:27:06 +0000
+
 python3.10 (3.10.12-1~22.04.11) jammy-security; urgency=medium
 
   * SECURITY UPDATE: Regular expression denial of service.
