@@ -1,3 +1,18 @@
+python3.10 (3.10.12-1~22.04.12) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: Possible payload obfuscation
+    - debian/patches/CVE-2025-8291.patch: check consistency of
+      the zip64 end of central dir record in Lib/zipfile.py,
+      Lib/test/test_zipfile.py.
+    - CVE-2025-8291
+  * SECURITY UPDATE: Performance degradation
+    - debian/patches/CVE-2025-6075.patch: fix quadratic complexity
+      in os.path.expandvars() in Lib/ntpatch.py, Lib/posixpath.py,
+      Lib/test/test_genericpatch.py, Lib/test/test_npath.py.
+    - CVE-2025-6075
+
+ -- Leonidas Da Silva Barbosa <leo.barbosa@canonical.com>  Tue, 04 Nov 2025 05:48:33 -0300
+
 python3.10 (3.10.12-1~22.04.11bb1) jammy; urgency=medium
 
   * Balabit patched version
