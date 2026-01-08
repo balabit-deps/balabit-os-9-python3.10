@@ -1,3 +1,13 @@
+python3.10 (3.10.12-1~22.04.13) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: HTTP Content-Length denial of service
+    - debian/patches/CVE-2025-13836.patch: Read large data in chunks with
+      geometric reads in Lib/http/client.py and add tests in 
+      Lib/test/test_httplib.py
+    - CVE-2025-13836
+
+ -- Vyom Yadav <vyom.yadav@canonical.com>  Thu, 08 Jan 2026 12:22:19 +0530
+
 python3.10 (3.10.12-1~22.04.12) jammy-security; urgency=medium
 
   * SECURITY UPDATE: Possible payload obfuscation
