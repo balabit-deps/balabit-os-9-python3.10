@@ -1,3 +1,47 @@
+python3.10 (3.10.12-1~22.04.14) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: Header injection in email messages where addresses are not
+    sanitized.
+    - debian/patches/CVE-2025-11468.patch: Add escape parentheses and backslash
+      in Lib/email/_header_value_parser.py. Add test in
+      Lib/test/test_email/test__header_value_parser.py.
+    - CVE-2025-11468
+  * SECURITY UPDATE: Quadratic algorithm when building excessively nested XML
+    documents.
+    - debian/patches/CVE-2025-12084-*.patch: Remove _in_document and replace
+      with node.ownerDocument in Lib/xml/dom/minidom.py. Set self.ownerDocument
+      to None in Lib/xml/dom/minidom.py. Add test in Lib/test/test_minidom.py.
+    - CVE-2025-12084
+  * SECURITY UPDATE: OOM and denial of service when opening malicious plist
+    file.
+    - debian/patches/CVE-2025-13837.patch: Add _MIN_READ_BUF_SIZE and _read
+      with checks in Lib/plistlib.py. Add test in Lib/test/test_plistlib.py.
+    - CVE-2025-13837
+  * SECURITY UPDATE: Header injection in user controlled data URLs in urllib.
+    - debian/patches/CVE-2025-15282.patch: Add control character checks in
+      Lib/urllib/request.py. Add test in Lib/test/test_urllib.py.
+  * SECURITY UPDATE: Command injection through user controlled commands in
+    imaplib.
+    - debian/patches/CVE-2025-15366.patch: Add _control_chars and checks in
+      Lib/imaplib.py. Add test in Lib/test/test_imaplib.py.
+  * SECURITY UPDATE: Command injection through user controlled commands in
+    poplib.
+    - debian/patches/CVE-2025-15367.patch: Add control character regex check
+      in Lib/poplib.py. Add test in Lib/test/test_poplib.py.
+    - CVE-2025-15367
+  * SECURITY UPDATE: HTTP header injection in user controlled cookie values.
+    - debian/patches/CVE-2026-0672.patch: Add _control_characters_re and
+      checks in Lib/http/cookies.py. Add test in Lib/test/test_http_cookies.py.
+    - CVE-2026-0672
+  * SECURITY UPDATE: HTTP header injection in user controlled headers and
+    values with newlines.
+    - debian/patches/CVE-2026-0865.patch: Add _control_chars_re and check in
+      Lib/wsgiref/headers.py. Add test in Lib/test/support/__init__.py and
+      Lib/test/test_wsgiref.py.
+    - CVE-2026-0865
+
+ -- Hlib Korzhynskyy <hlib.korzhynskyy@canonical.com>  Mon, 26 Jan 2026 11:25:28 -0330
+
 python3.10 (3.10.12-1~22.04.13) jammy-security; urgency=medium
 
   * SECURITY UPDATE: HTTP Content-Length denial of service
