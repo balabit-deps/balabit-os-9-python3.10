@@ -1,3 +1,9 @@
+python3.10 (3.10.12-1~22.04.14bb1) jammy; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 07 Feb 2026 10:58:52 +0100
+
 python3.10 (3.10.12-1~22.04.14) jammy-security; urgency=medium
 
   * SECURITY UPDATE: Header injection in email messages where addresses are not
