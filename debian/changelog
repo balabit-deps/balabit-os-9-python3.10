@@ -1,3 +1,21 @@
+python3.10 (3.10.12-1~22.04.15) jammy-security; urgency=medium
+
+  * SECURITY REGRESSION: Revert patch for CVE-2025-15366
+    - debian/patches/CVE-2025-15366.patch: Reverted. Patch breaks RFC
+      9051 IMAP conformance and introduces behavior regressions avoided
+      by upstream.
+    - CVE-2025-15366
+  * SECURITY REGRESSION: Revert patch for CVE-2025-15367
+    - debian/patches/CVE-2025-15367.patch: Reverted to prevent behavior
+      regressions, aligning with upstream backporting decisions.
+    - CVE-2025-15367
+  * SECURITY REGRESSION: Allow HTAB in wsgiref header values
+    - debian/patches/CVE-2026-0865-2.patch: Permit HTAB in header values
+      (excluding names) in Lib/wsgiref/headers.py, add test coverage.
+    - CVE-2026-0865
+
+ -- Vyom Yadav <vyom.yadav@canonical.com>  Tue, 03 Mar 2026 17:26:32 +0530
+
 python3.10 (3.10.12-1~22.04.14) jammy-security; urgency=medium
 
   * SECURITY UPDATE: Header injection in email messages where addresses are not
