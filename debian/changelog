@@ -1,3 +1,92 @@
+python3.10 (3.10.12-1~22.04.16) jammy-security; urgency=medium
+
+  * SECURITY UPDATE: incorrect normalization in tarfile module
+    - debian/patches/CVE-2025-13462.patch: Skip TarInfo DIRTYPE normalization
+      during GNU long name handling in Lib/tarfile.py,
+      Lib/test/test_tarfile.py.
+    - CVE-2025-13462
+  * SECURITY UPDATE: crash in Markdown parsing
+    - debian/patches/CVE-2025-69534-1.patch: Fix comment parsing in HTMLParser
+      according to the HTML5 standard in Lib/html/parser.py,
+      Lib/test/test_htmlparser.py.
+    - debian/patches/CVE-2025-69534-2.patch: Fix parsing start and end tags in
+      HTMLParser according to the HTML5 standard in Lib/html/parser.py,
+      Lib/test/support/__init__.py, Lib/test/test_htmlparser.py.
+    - debian/patches/CVE-2025-69534-3.patch: Fix parsing attributes with
+      whitespaces around the "=" separator in HTMLParser in Lib/html/parser.py,
+      Lib/test/test_htmlparser.py.
+    - debian/patches/CVE-2025-69534-4.patch: Fix support of elements "textarea"
+      and "title" in HTMLParser in Lib/html/parser.py,
+      Lib/test/test_htmlparser.py.
+    - debian/patches/CVE-2025-69534-5.patch: Fix CDATA section parsing in
+      HTMLParser in Lib/html/parser.py, Lib/test/test_htmlparser.py.
+    - debian/patches/CVE-2025-69534-6.patch: Support more RAWTEXT and PLAINTEXT
+      elements in HTMLParser in Doc/library/html.parser.rst, Lib/html/parser.py,
+      Lib/test/test_htmlparser.py.
+    - CVE-2025-69534
+  * SECURITY UPDATE: incorrect newlines quoting in email module
+    - debian/patches/CVE-2026-1299.patch: email: verify headers are sound in
+      BytesGenerator in Lib/email/generator.py,
+      Lib/test/test_email/test_generator.py, Lib/test/test_email/test_policy.py.
+    - CVE-2026-1299
+  * SECURITY UPDATE:HTTP proxy via "CONNECT" tunneling doesn't sanitize CR/LF
+    - debian/patches/CVE-2026-1502.patch: Reject CR/LF in HTTP tunnel request
+      headers in Lib/http/client.py, Lib/test/test_httplib.py.
+    - CVE-2026-1502
+  * SECURITY UPDATE: missing audit event for legacy *.pyc files
+    - debian/patches/CVE-2026-2297.patch: Ensure SourcelessFileLoader uses
+      io.open_code in Lib/importlib/_bootstrap_external.py.
+    - CVE-2026-2297
+  * SECURITY UPDATE: unicodedata.normalize() can take excessive CPU time
+    - debian/patches/CVE-2026-3276.patch: Fix O(n^2) canonical ordering in
+      unicodedata.normalize() in Lib/test/test_unicodedata.py,
+      Modules/unicodedata.c.
+    - CVE-2026-3276
+  * SECURITY UPDATE: Incomplete fix for CVE-2026-0672
+    - debian/patches/CVE-2026-3644.patch: Reject control characters in
+      http.cookies.Morsel.update() in Lib/http/cookies.py,
+      Lib/test/test_http_cookies.py.
+    - CVE-2026-3644
+  * SECURITY UPDATE: Overflow in Expat parser
+    - debian/patches/CVE-2026-4224.patch: Avoid unbound C recursion in
+      conv_content_model in pyexpat.c in Lib/test/test_pyexpat.py,
+      Modules/pyexpat.c.
+    - CVE-2026-4224
+  * SECURITY UPDATE: leading dashes used as options in webbrowser.open()
+    - debian/patches/CVE-2026-4519-1.patch: Reject leading dashes in webbrowser
+      URLs in Lib/test/test_webbrowser.py, Lib/webbrowser.py.
+    - debian/patches/CVE-2026-4519-2.patch: Tweak the exception message and
+      increase test coverage in Lib/test/test_webbrowser.py, Lib/webbrowser.py.
+    - CVE-2026-4519
+  * SECURITY UPDATE: Mitgation of CVE-2026-4519 was incomplete
+    - debian/patches/CVE-2026-4786.patch: Fix webbrowser `%action` substitution
+      bypass of dash-prefix check in Lib/test/test_webbrowser.py,
+      Lib/webbrowser.py.
+    - CVE-2026-4786
+  * SECURITY UPDATE: insufficient escaping in http.cookies.Morsel.js_output()
+    - debian/patches/CVE-2026-6019-1.patch: Base64-encode cookie values
+      embedded in JS in Lib/http/cookies.py, Lib/test/test_http_cookies.py.
+    - debian/patches/CVE-2026-6019-2.patch: Use `decodeURIComponent()` for
+      UTF-8 support in `js_output()` in Lib/http/cookies.py,
+      Lib/test/test_http_cookies.py.
+    - CVE-2026-6019
+  * SECURITY UPDATE: use-after-free in lzma, bz2, gzip decoders
+    - debian/patches/CVE-2026-6100.patch: Fix a possible UAF in
+      `{LZMA,BZ2,_Zlib}Decompressor` in Modules/_bz2module.c,
+      Modules/_lzmamodule.c.
+    - CVE-2026-6100
+  * SECURITY UPDATE: Incomplete fix for CVE-2021-4189
+    - debian/patches/CVE-2026-8328.patch: Apply CVE-2021-4189 PASV fix to
+      ftplib.ftpcp() (GH-149648) (#149795) in Lib/ftplib.py,
+      Lib/test/test_ftplib.py.
+    - CVE-2026-8328
+  * SECURITY UPDATE: bz2.BZ2Decompressor object reuse after decompression error
+    - debian/patches/CVE-2026-9669.patch: Prevent bz2 decompressor reuse after
+      errors in Lib/test/test_bz2.py, Modules/_bz2module.c.
+    - CVE-2026-9669
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Mon, 22 Jun 2026 14:55:27 -0400
+
 python3.10 (3.10.12-1~22.04.15) jammy-security; urgency=medium
 
   * SECURITY REGRESSION: Revert patch for CVE-2025-15366
