@@ -1,3 +1,9 @@
+python3.10 (3.10.12-1~22.04.16bb1) jammy; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 11 Jul 2026 10:23:07 +0200
+
 python3.10 (3.10.12-1~22.04.16) jammy-security; urgency=medium
 
   * SECURITY UPDATE: incorrect normalization in tarfile module
